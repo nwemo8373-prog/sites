@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>🌐 𝐖𝐄𝐁𝐒𝐈𝐓𝐄𝐒 𝐌𝐀𝐑𝐊𝐄𝐓 | منصة عرض المواقع والخدمات</title>
+<meta name="description" content="منصة احترافية لعرض المواقع والمشاريع والخدمات الرقمية.">
+<meta property="og:title" content="🌐 𝐖𝐄𝐁𝐒𝐈𝐓𝐄𝐒 𝐌𝐀𝐑𝐊𝐄𝐓">
+<meta property="og:description" content="منصة عرض المواقع والخدمات الرقمية الاحترافية.">
+<meta property="og:type" content="website">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<style>
+:root{--bg-primary:#0a0a0f;--bg-secondary:#13131a;--surface:rgba(20,20,30,.75);--surface-hover:rgba(30,30,45,.9);--border:rgba(212,175,55,.2);--border-hover:rgba(212,175,55,.6);--gold:#d4af37;--gold-light:#f3e5ab;--accent-cyan:#00f0ff;--text-main:#f0f0f5;--text-muted:#9ba1a6;--danger:#ff4757;--success:#2ed573;--transition:all .3s cubic-bezier(.4,0,.2,1)}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Tajawal,sans-serif;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg-primary);color:var(--text-main);min-height:100vh;overflow-x:hidden}
+body:before{content:"";position:fixed;top:-20vh;left:50%;transform:translateX(-50%);width:80vw;height:50vh;background:radial-gradient(circle,rgba(212,175,55,.08),rgba(0,240,255,.03) 40%,transparent 70%);z-index:-1;pointer-events:none}
+button,input,textarea,select{font:inherit}
+button,a{cursor:pointer}
+#loading-screen{position:fixed;inset:0;background:var(--bg-primary);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .5s}
+.loader-ring{width:60px;height:60px;border:3px solid rgba(212,175,55,.2);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite;margin-bottom:20px}
+@keyframes spin{to{transform:rotate(360deg)}}
+#toast-container{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);z-index:9998;display:flex;flex-direction:column;gap:10px;align-items:center;pointer-events:none}
+.toast{background:var(--surface);backdrop-filter:blur(12px);border:1px solid var(--border);color:var(--text-main);padding:12px 24px;border-radius:50px;font-size:.95rem;box-shadow:0 10px 30px #0008;animation:fadeIn .3s ease,fadeOut .3s ease 2.7s forwards;display:flex;align-items:center;gap:10px;white-space:nowrap}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}@keyframes fadeOut{to{opacity:0;transform:translateY(-10px)}}
+header{background:#0a0a0fd9;backdrop-filter:blur(20px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:1000;padding:15px 5%;display:flex;justify-content:space-between;align-items:center}
+.logo-area{display:flex;flex-direction:column}.logo-title{font-size:1.35rem;font-weight:900;background:linear-gradient(135deg,var(--gold-light),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent}.logo-subtitle{font-size:.72rem;color:var(--text-muted)}
+.header-actions{display:flex;gap:10px;align-items:center}.btn-icon{background:var(--surface);border:1px solid var(--border);color:var(--gold);width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;transition:var(--transition)}
+.btn-icon:hover{background:var(--surface-hover);border-color:var(--gold);transform:translateY(-2px)}
+main{max-width:1400px;margin:auto;padding:30px 20px 100px}.hero-section{text-align:center;padding:50px 20px;margin-bottom:40px;background:linear-gradient(180deg,rgba(20,20,30,.4),transparent);border-radius:24px;border:1px solid rgba(212,175,55,.1)}
+.hero-section h1{font-size:clamp(2rem,4vw,3.2rem);font-weight:900;margin-bottom:15px}.hero-section p{color:var(--text-muted);font-size:1.1rem;max-width:600px;margin:0 auto 30px}
+.hero-buttons{display:flex;gap:15px;justify-content:center;flex-wrap:wrap}.btn-primary,.btn-secondary{padding:12px 28px;border-radius:12px;cursor:pointer;transition:var(--transition);display:inline-flex;align-items:center;gap:8px;text-decoration:none}
+.btn-primary{background:linear-gradient(135deg,var(--gold),#aa820a);color:#000;font-weight:700;border:0;box-shadow:0 4px 15px #d4af3733}.btn-secondary{background:var(--surface);color:var(--text-main);border:1px solid var(--border);font-weight:600}
+.btn-primary:hover,.btn-secondary:hover{transform:translateY(-3px)}
+.controls-section{margin-bottom:40px}.search-bar-wrapper{position:relative;max-width:600px;margin:0 auto 25px}.search-bar-wrapper input{width:100%;background:var(--surface);border:1px solid var(--border);padding:15px 50px 15px 20px;border-radius:16px;color:var(--text-main);outline:0}.search-bar-wrapper i{position:absolute;left:20px;top:50%;transform:translateY(-50%);color:var(--text-muted)}
+.categories-scroll{display:flex;gap:10px;overflow-x:auto;padding-bottom:10px;scrollbar-width:none}.categories-scroll::-webkit-scrollbar{display:none}.category-chip{background:var(--surface);border:1px solid var(--border);color:var(--text-muted);padding:8px 20px;border-radius:50px;white-space:nowrap;cursor:pointer}.category-chip.active,.category-chip:hover{background:var(--gold);color:#000;border-color:var(--gold)}
+.sites-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:25px}.site-card{background:var(--surface);border-radius:20px;border:1px solid var(--border);overflow:hidden;transition:var(--transition);display:flex;flex-direction:column;backdrop-filter:blur(15px)}.site-card:hover{transform:translateY(-6px);border-color:var(--border-hover);box-shadow:0 15px 35px #0009}
+.card-image-container{position:relative;width:100%;height:200px;overflow:hidden;cursor:pointer;background:#000}.card-image-container img{width:100%;height:100%;object-fit:cover;transition:.5s}.site-card:hover img{transform:scale(1.08)}
+.card-badge-sale{position:absolute;top:15px;right:15px;background:#ff4757e6;color:#fff;padding:5px 12px;border-radius:30px;font-size:.75rem;font-weight:700}.card-favorite-btn{position:absolute;top:15px;left:15px;background:#0009;border:1px solid var(--border);color:var(--text-muted);width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center}.card-favorite-btn.active{color:var(--danger);border-color:var(--danger)}
+.card-content{padding:20px;display:flex;flex-direction:column;flex-grow:1}.card-category{font-size:.75rem;color:var(--accent-cyan);font-weight:700;margin-bottom:8px}.card-title{font-size:1.25rem;font-weight:700;margin-bottom:10px}.card-description{font-size:.9rem;color:var(--text-muted);margin-bottom:20px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;flex-grow:1;line-height:1.5}.card-footer{display:flex;gap:10px;border-top:1px solid #fff0f0;padding-top:15px}.card-btn{flex:1;padding:10px;border-radius:10px;font-size:.9rem;font-weight:600;text-align:center;cursor:pointer;border:none;display:flex;align-items:center;justify-content:center;gap:6px;text-decoration:none}.btn-visit{background:var(--surface-hover);color:var(--text-main);border:1px solid var(--border)}.btn-details{background:var(--gold);color:#000}
+.empty-state{grid-column:1/-1;text-align:center;padding:60px 20px;background:var(--surface);border-radius:20px;border:1px solid var(--border)}.empty-state i{font-size:3rem;color:var(--text-muted);margin-bottom:15px}.empty-state p{color:var(--text-muted)}
+.modal-overlay{position:fixed;inset:0;background:#050508d9;backdrop-filter:blur(15px);z-index:2000;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .3s}.modal-overlay.active{opacity:1;pointer-events:auto}.modal-container{background:var(--bg-secondary);border:1px solid var(--border);width:100%;max-width:800px;max-height:92vh;border-radius:24px;overflow-y:auto;transform:scale(.9);transition:.3s;position:relative;box-shadow:0 25px 60px #000d}.modal-overlay.active .modal-container{transform:scale(1)}
+.modal-header{position:relative;height:280px;background:#000}.modal-header img{width:100%;height:100%;object-fit:cover}.modal-close-btn{position:absolute;top:20px;left:20px;background:#0009;border:1px solid var(--border);color:#fff;width:40px;height:40px;border-radius:50%;z-index:10}.modal-body{padding:30px}.modal-title-area{display:flex;justify-content:space-between;align-items:flex-start;gap:15px;flex-wrap:wrap}.modal-title{font-size:1.8rem;font-weight:900}.modal-price-tag{background:#2ed57326;border:1px solid var(--success);color:var(--success);padding:6px 16px;border-radius:12px;font-weight:700}.modal-description{color:var(--text-muted);line-height:1.8;margin:15px 0 25px}.modal-sale-box{background:#ff475714;border:1px solid #ff47574d;border-radius:16px;padding:20px;margin-bottom:25px}.modal-sale-box h4{color:var(--danger);margin-bottom:10px}.modal-actions{display:flex;gap:12px;flex-wrap:wrap}.modal-btn{flex:1;min-width:140px;padding:14px;border-radius:14px;font-weight:700;cursor:pointer;border:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none}.btn-whatsapp{background:#25d366;color:#fff}.btn-buy{background:var(--danger);color:#fff}
+.admin-form-group{margin-bottom:20px}.admin-form-group label{display:block;margin-bottom:8px;font-weight:600;color:var(--gold-light);font-size:.9rem}.admin-form-group input,.admin-form-group textarea,.admin-form-group select{width:100%;background:var(--surface);border:1px solid var(--border);padding:12px 15px;border-radius:12px;color:var(--text-main);font-size:.95rem;outline:0}.admin-form-row{display:grid;grid-template-columns:1fr 1fr;gap:15px}.checkbox-group{display:flex;align-items:center;gap:10px;cursor:pointer;margin-top:10px}.checkbox-group input{width:18px;height:18px;accent-color:var(--gold)}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#0a0a0fe8;backdrop-filter:blur(20px);border-top:1px solid var(--border);display:none;justify-content:space-around;padding:10px 0;z-index:990}.bottom-nav-item{background:none;border:0;color:var(--text-muted);display:flex;flex-direction:column;align-items:center;gap:4px;font-size:.72rem}.bottom-nav-item.active,.bottom-nav-item:hover{color:var(--gold)}.bottom-nav-item i{font-size:1.2rem}
+.chat-box{height:380px;overflow-y:auto;background:#08080c;border:1px solid var(--border);border-radius:16px;padding:15px;display:flex;flex-direction:column;gap:10px}.chat-msg{max-width:85%;padding:10px 13px;border-radius:14px;background:var(--surface);border:1px solid var(--border);align-self:flex-start}.chat-msg.me{align-self:flex-end;background:#d4af3722;border-color:#d4af3755}.chat-meta{font-size:.7rem;color:var(--text-muted);margin-bottom:4px}.chat-actions{display:flex;gap:7px;margin-top:8px;flex-wrap:wrap}.chat-input-row{display:flex;gap:8px;margin-top:10px}.chat-input-row input{flex:1;background:var(--surface);border:1px solid var(--border);color:#fff;border-radius:12px;padding:12px}.mini-btn{border:1px solid var(--border);background:var(--surface);color:var(--gold);padding:7px 10px;border-radius:9px}.mini-btn.success{color:var(--success);border-color:#2ed57366}.mini-btn.danger{color:var(--danger)}
+.order-box{background:var(--surface);border:1px solid var(--border);padding:15px;border-radius:14px;margin-bottom:10px}.status{font-size:.75rem;padding:4px 8px;border-radius:20px;background:#fff1;color:var(--text-muted)}.status.pending{color:var(--gold)}.status.approved{color:var(--success)}.status.completed{color:var(--accent-cyan)}
+@media(max-width:768px){.bottom-nav{display:flex}main{padding-bottom:90px}.admin-form-row{grid-template-columns:1fr}.modal-header{height:220px}.modal-body{padding:20px}.sites-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="loading-screen"><div class="loader-ring"></div><h2 style="color:var(--gold)">𝐖𝐄𝐁𝐒𝐈𝐓𝐄𝐒 𝐌𝐀𝐑𝐊𝐄𝐓</h2><p style="color:var(--text-muted)">جاري تحميل المنصة...</p></div>
+<div id="toast-container"></div>
+
+<header>
+<div class="logo-area"><span class="logo-title">🌐 𝐖𝐄𝐁𝐒𝐈𝐓𝐄𝐒 𝐌𝐀𝐑𝐊𝐄𝐓</span><span class="logo-subtitle">منصة عرض المواقع والخدمات الرقمية</span></div>
+<div class="header-actions">
+<button class="btn-icon" onclick="goHash('#web')" title="المواقع"><i class="fa-solid fa-globe"></i></button>
+<button class="btn-icon" onclick="openAuth()" title="تسجيل الدخول"><i class="fa-solid fa-user"></i></button>
+<button class="btn-icon" onclick="goHash('#cart')" title="السلة"><i class="fa-solid fa-cart-shopping"></i><span id="cartCount" style="position:absolute"></span></button>
+<button class="btn-icon" onclick="openAdminAuth()" title="الإدارة"><i class="fa-solid fa-sliders"></i></button>
+</div>
+</header>
+
+<main>
+<section class="hero-section" id="hero-view">
+<h1>اكتشف أحدث المواقع والمشاريع الرقمية</h1>
+<p>منصة احترافية متكاملة لاستعراض واستكشاف أقوى الحلول التقنية والتطبيقات والمتاجر الإلكترونية.</p>
+<div class="hero-buttons"><button class="btn-primary" onclick="goHash('#web')"><i class="fa-solid fa-compass"></i> استكشف المواقع</button><button class="btn-secondary" onclick="openAuth()"><i class="fa-solid fa-plus-circle"></i> أضف موقعك</button></div>
+</section>
+<section class="controls-section" id="web">
+<div class="search-bar-wrapper"><input id="searchInput" placeholder="ابحث عن اسم موقع، تصنيف، أو كلمة مفتاحية..." oninput="handleSearch(event)"><i class="fa-solid fa-magnifying-glass"></i></div>
+<div class="categories-scroll">
+<div class="category-chip active" onclick="filterByCategory('الكل',this)">الكل</div><div class="category-chip" onclick="filterByCategory('مواقع',this)">مواقع</div><div class="category-chip" onclick="filterByCategory('متاجر',this)">متاجر</div><div class="category-chip" onclick="filterByCategory('أفلام',this)">أفلام</div><div class="category-chip" onclick="filterByCategory('خدمات',this)">خدمات</div><div class="category-chip" onclick="filterByCategory('أعمال',this)">أعمال</div><div class="category-chip" onclick="filterByCategory('تصميم',this)">تصميم</div><div class="category-chip" onclick="filterByCategory('تسويق',this)">تسويق</div><div class="category-chip" onclick="filterByCategory('أخرى',this)">أخرى</div>
+</div>
+</section>
+<section><div class="sites-grid" id="sitesGrid"></div></section>
+</main>
+
+<nav class="bottom-nav">
+<button class="bottom-nav-item active" onclick="goHash('#dashboard')"><i class="fa-solid fa-house"></i><span>الرئيسية</span></button>
+<button class="bottom-nav-item" onclick="goHash('#web')"><i class="fa-solid fa-compass"></i><span>المواقع</span></button>
+<button class="bottom-nav-item" onclick="goHash('#favorites')"><i class="fa-solid fa-heart"></i><span>المفضلة</span></button>
+<button class="bottom-nav-item" onclick="goHash('#chat')"><i class="fa-solid fa-comments"></i><span>المحادثة</span></button>
+<button class="bottom-nav-item" onclick="goHash('#cart')"><i class="fa-solid fa-cart-shopping"></i><span>السلة</span></button>
+</nav>
+
+<div class="modal-overlay" id="detailsModal"><div class="modal-container">
+<div class="modal-header"><button class="modal-close-btn" onclick="closeModal('detailsModal')"><i class="fa-solid fa-xmark"></i></button><img id="modalImage" src="" alt=""></div>
+<div class="modal-body"><div class="modal-title-area"><div><span id="modalCategory" class="card-category"></span><h2 id="modalTitle" class="modal-title"></h2></div><div id="modalPriceTag" class="modal-price-tag" style="display:none"></div></div>
+<p id="modalDescription" class="modal-description"></p><div id="modalSaleSection" class="modal-sale-box" style="display:none"><h4><i class="fa-solid fa-tag"></i> تفاصيل البيع والتعاقد</h4><p id="modalSaleDesc" style="color:var(--text-muted)"></p></div>
+<div class="modal-actions"><a id="modalVisitBtn" class="modal-btn btn-visit" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-external-link-alt"></i> فتح الموقع</a><a id="modalWaBtn" class="modal-btn btn-whatsapp" target="_blank" rel="noopener noreferrer" style="display:none"><i class="fa-brands fa-whatsapp"></i> واتساب</a><button id="modalBuyBtn" class="modal-btn btn-buy" style="display:none" onclick="addActiveToCart()"><i class="fa-solid fa-bag-shopping"></i> أريد شراء الموقع</button><button class="modal-btn btn-visit" onclick="shareCurrentSite()"><i class="fa-solid fa-share-nodes"></i> مشاركة</button></div>
+</div></div></div>
+
+<div class="modal-overlay" id="authModal"><div class="modal-container"><div class="modal-body">
+<button class="modal-close-btn" onclick="closeModal('authModal')"><i class="fa-solid fa-xmark"></i></button><h2 style="color:var(--gold);margin-bottom:10px">تسجيل الدخول</h2><p style="color:var(--text-muted);margin-bottom:20px">سجّل بحساب Google لاستخدام الشراء والمحادثات وإضافة المواقع.</p>
+<button class="btn-primary" style="width:100%;justify-content:center" onclick="googleLogin()"><i class="fa-brands fa-google"></i> تسجيل الدخول باستخدام Google</button>
+<div id="userBox" style="margin-top:20px"></div></div></div></div>
+
+<div class="modal-overlay" id="adminModal"><div class="modal-container"><div style="padding:20px 25px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between"><h3 style="color:var(--gold)">لوحة المالك #admin</h3><button class="modal-close-btn" style="position:static" onclick="closeModal('adminModal')"><i class="fa-solid fa-xmark"></i></button></div>
+<div class="modal-body"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:20px;flex-wrap:wrap"><p style="color:var(--text-muted)">إدارة المواقع والطلبات والمحادثات.</p><button class="btn-primary" onclick="openSiteForm()"><i class="fa-solid fa-plus"></i> إضافة موقع</button></div><div id="adminSitesList"></div><hr style="border-color:var(--border);margin:25px 0"><h3 style="color:var(--gold);margin-bottom:15px">طلبات الشراء</h3><div id="adminOrders"></div></div></div></div>
+
+<div class="modal-overlay" id="siteFormModal"><div class="modal-container"><div style="padding:20px 25px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between"><h3 id="formModalTitle" style="color:var(--gold)">إضافة موقع</h3><button class="modal-close-btn" style="position:static" onclick="closeModal('siteFormModal')"><i class="fa-solid fa-xmark"></i></button></div>
+<div class="modal-body"><form id="siteForm" onsubmit="handleSiteFormSubmit(event)"><input type="hidden" id="siteId">
+<div class="admin-form-row"><div class="admin-form-group"><label>اسم الموقع</label><input id="formName" required></div><div class="admin-form-group"><label>التصنيف</label><select id="formCategory"><option>مواقع</option><option>متاجر</option><option>أفلام</option><option>خدمات</option><option>أعمال</option><option>تصميم</option><option>تسويق</option><option>أخرى</option></select></div></div>
+<div class="admin-form-group"><label>رابط الموقع</label><input type="url" id="formUrl" required placeholder="https://"></div>
+<div class="admin-form-group"><label>رابط الصورة أو ارفع صورة</label><input type="url" id="formImage" placeholder="https://..."><input type="file" id="formImageFile" accept="image/*" style="margin-top:10px"></div>
+<div class="admin-form-group"><label>الوصف</label><textarea id="formDescription" rows="3" required></textarea></div>
+<div class="checkbox-group"><input type="checkbox" id="formSaleEnabled" onchange="toggleSaleFields()"><label for="formSaleEnabled" style="color:var(--danger);font-weight:700">الموقع معروض للبيع</label></div>
+<div id="saleFieldsContainer" style="display:none;margin-top:15px"><div class="admin-form-row"><div class="admin-form-group"><label>السعر</label><input id="formPrice" placeholder="450 USD أو 5000 EGP"></div><div class="admin-form-group"><label>رقم واتساب</label><input id="formWhatsapp" placeholder="010xxxxxxxx"></div></div><div class="admin-form-group"><label>وصف البيع والتعاقد</label><textarea id="formSaleDescription" rows="2"></textarea></div></div>
+<div class="admin-form-group"><label>رابط التسليم بعد الموافقة</label><input type="url" id="formDeliveryUrl" placeholder="https://..."></div>
+<button class="modal-btn btn-details" style="width:100%">حفظ الموقع</button></form></div></div></div>
+
+<div class="modal-overlay" id="cartModal"><div class="modal-container"><div style="padding:20px 25px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between"><h3 style="color:var(--gold)">🛒 سلة التسوق #cart</h3><button class="modal-close-btn" style="position:static" onclick="closeModal('cartModal')"><i class="fa-solid fa-xmark"></i></button></div><div class="modal-body"><div id="cartItems"></div><div style="border-top:1px solid var(--border);padding-top:15px;margin-top:15px"><strong>الإجمالي: <span id="cartTotalPrice">0</span></strong></div><button class="btn-primary" style="width:100%;justify-content:center;margin-top:15px" onclick="checkoutCart()">إرسال طلب الشراء</button></div></div></div>
+
+<div class="modal-overlay" id="chatModal"><div class="modal-container"><div style="padding:20px 25px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between"><h3 style="color:var(--gold)">المحادثة #chat</h3><button class="modal-close-btn" style="position:static" onclick="closeModal('chatModal')"><i class="fa-solid fa-xmark"></i></button></div><div class="modal-body"><div id="chatBox" class="chat-box"></div><div class="chat-input-row"><input id="chatInput" placeholder="اكتب رسالتك..."><button class="btn-primary" onclick="sendChat()"><i class="fa-solid fa-paper-plane"></i></button></div></div></div></div>
+
+<script>
+const SUPABASE_URL="https://byesoztsovwhnxrsgnsm.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY="sb_publishable_38mm264m5JCeJua1QmTWHw_k5iNYJhM";
+const OWNER_EMAIL="njma6797@gmail.com";
+
+const firebaseConfig={
+ apiKey:"AIzaSyD3P1yebmxR2uJS2YP1RroA79gP8puaSog",
+ authDomain:"nanaa-1f1a5.firebaseapp.com",
+ databaseURL:"https://nanaa-1f1a5-default-rtdb.europe-west1.firebasedatabase.app/",
+ projectId:"nanaa-1f1a5",
+ storageBucket:"nanaa-1f1a5.firebasestorage.app",
+ messagingSenderId:"736284910234",
+ appId:"1:736284910234:web:nana1f1a5"
+};
+
+let sb=null,auth=null,db=null,currentUser=null,isOwner=false,sites=[],favorites=[],cart=[],currentCategory="الكل",searchQuery="",activeSiteDetails=null,chatListener=null,currentChatId="global";
+const defaultSites=[
+{id:"1",name:"NEGM MOVIES Streaming",category:"أفلام",description:"منصة بث ومتابعة أحدث الأفلام والمسلسلات بجودة سينمائية عالية وتصميم عصري داكن.",image:"https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=1000&auto=format&fit=crop",url:"https://felm.duckdns.org",saleEnabled:true,price:"$450",whatsapp:"201000000000",saleDescription:"يشمل السورس كود الكامل مع قاعدة البيانات ونظام الإدارة.",deliveryUrl:"https://felm.duckdns.org"},
+{id:"2",name:"NAGM Ultimate Platform",category:"خدمات",description:"منصة مراسلة ودردشة فورية ذكية متعددة الأنظمة.",image:"https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=1000&auto=format&fit=crop",url:"https://negmchat-8w29.whacka.app",saleEnabled:false,price:"",whatsapp:"",saleDescription:"",deliveryUrl:""},
+{id:"3",name:"CYBER ZONE Security Hub",category:"مواقع",description:"بوابة تعليمية متقدمة لأمن المعلومات والأمن السيبراني والبرمجة.",image:"https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=1000&auto=format&fit=crop",url:"https://github.com",saleEnabled:true,price:"$300",whatsapp:"201000000000",saleDescription:"موقع جاهز مع لوحة تحكم.",deliveryUrl:"https://github.com"},
+{id:"4",name:"Creative Ads Brand Store",category:"متاجر",description:"متجر إلكتروني احترافي لتصميم الأزياء والهويات البصرية.",image:"https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=1000&auto=format&fit=crop",url:"https://github.com",saleEnabled:false,price:"",whatsapp:"",saleDescription:"",deliveryUrl:""}
+];
+
+function safe(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
+function slug(v){return String(v||"site").trim().toLowerCase().replace(/[\s_]+/g,"-").replace(/[^\u0600-\u06FFa-z0-9-]/gi,"").replace(/-+/g,"-").replace(/^-|-$/g,"")||"site"}
+function normalizeWhatsapp(v){let n=String(v||"").replace(/\D/g,"");if(!n)return"";if(n.startsWith("00"))n=n.slice(2);if(n.startsWith("20"))return n;if(n.startsWith("0"))n=n.slice(1);return "20"+n}
+function goHash(h){location.hash=h}
+function siteHash(s){return "#site-"+slug(s.name)}
+function toast(m,icon="fa-circle-check"){const c=document.getElementById("toast-container"),d=document.createElement("div");d.className="toast";d.innerHTML=`<i class="fa-solid ${icon}" style="color:var(--gold)"></i><span>${safe(m)}</span>`;c.appendChild(d);setTimeout(()=>d.remove(),3000)}
+function openModal(id){document.getElementById(id)?.classList.add("active")}
+function closeModal(id){document.getElementById(id)?.classList.remove("active")}
+function loadLocal(){favorites=JSON.parse(localStorage.getItem("wm_favorites")||"[]");cart=JSON.parse(localStorage.getItem("wm_cart")||"[]")}
+function saveLocal(){localStorage.setItem("wm_favorites",JSON.stringify(favorites));localStorage.setItem("wm_cart",JSON.stringify(cart));updateCartCount()}
+async function init(){
+ loadLocal();
+ try{sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY)}catch(e){}
+ try{
+  if(firebaseConfig.apiKey.startsWith("PUT_")) throw new Error("Firebase Web Config not filled");
+  if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
+  auth=firebase.auth();db=firebase.database();
+  auth.onAuthStateChanged(async u=>{currentUser=u||null;isOwner=!!u&&u.email?.toLowerCase()===OWNER_EMAIL.toLowerCase();updateUserBox();});
+ }catch(e){console.warn(e)}
+ await loadSites();
+ renderSites();updateCartCount();
+ setTimeout(()=>{let l=document.getElementById("loading-screen");l.style.opacity=0;setTimeout(()=>l.remove(),500)},500);
+ handleRouting();
+}
+async function loadSites(){
+ if(!sb){sites=defaultSites;return}
+ try{
+  const {data,error}=await sb.from("sites").select("*").order("created_at",{ascending:false});
+  if(error||!data?.length){sites=defaultSites;return}
+  sites=data.map(normalizeSite);
+ }catch(e){sites=defaultSites}
+}
+function normalizeSite(s){return{id:String(s.id),name:s.name,category:s.category||"أخرى",description:s.description||"",image:s.image||"",url:s.url||"",saleEnabled:!!s.sale_enabled,price:s.price||"",whatsapp:s.whatsapp||"",saleDescription:s.sale_description||"",deliveryUrl:s.delivery_url||""}}
+function renderSites(){
+ const g=document.getElementById("sitesGrid");g.innerHTML="";
+ const fav=location.hash==="#favorites";
+ const arr=sites.filter(s=>(currentCategory==="الكل"||s.category===currentCategory)&&((s.name+" "+s.description+" "+s.category).toLowerCase().includes(searchQuery.toLowerCase()))&&(!fav||favorites.includes(String(s.id))));
+ if(!arr.length){g.innerHTML='<div class="empty-state"><i class="fa-solid fa-box-open"></i><h3>لم نجد أي موقع مطابق</h3><p>جرب البحث بكلمات أخرى أو اختر تصنيفًا مختلفًا.</p></div>';return}
+ arr.forEach(s=>{const c=document.createElement("div");c.className="site-card";const id=encodeURIComponent(String(s.id));c.innerHTML=`<div class="card-image-container" data-open="${id}"><img src="${safe(s.image)}" alt="${safe(s.name)}" loading="lazy">${s.saleEnabled?`<span class="card-badge-sale">للبيع ${safe(s.price)}</span>`:""}<button class="card-favorite-btn ${favorites.includes(String(s.id))?"active":""}" data-fav="${id}"><i class="fa-solid fa-heart"></i></button></div><div class="card-content"><span class="card-category">${safe(s.category)}</span><h3 class="card-title">${safe(s.name)}</h3><p class="card-description">${safe(s.description)}</p><div class="card-footer"><a href="${safe(s.url)}" target="_blank" rel="noopener noreferrer" class="card-btn btn-visit"><i class="fa-solid fa-external-link-alt"></i> شاهد الآن</a><button class="card-btn btn-details" data-open="${id}"><i class="fa-solid fa-circle-info"></i> تفاصيل</button></div></div>`;c.querySelectorAll("[data-open]").forEach(x=>x.onclick=()=>openDetails(decodeURIComponent(x.dataset.open)));c.querySelector("[data-fav]").onclick=e=>{e.stopPropagation();toggleFavorite(decodeURIComponent(e.currentTarget.dataset.fav))};g.appendChild(c)})
+}
+function openDetails(id){const s=sites.find(x=>String(x.id)===String(id));if(!s)return;activeSiteDetails=s;location.hash=siteHash(s);document.getElementById("modalImage").src=s.image;document.getElementById("modalCategory").textContent=s.category;document.getElementById("modalTitle").textContent=s.name;document.getElementById("modalDescription").textContent=s.description;const p=document.getElementById("modalPriceTag");p.style.display=s.saleEnabled&&s.price?"block":"none";p.textContent=s.price||"";const sale=document.getElementById("modalSaleSection"),wa=document.getElementById("modalWaBtn"),buy=document.getElementById("modalBuyBtn");sale.style.display=s.saleEnabled?"block":"none";document.getElementById("modalSaleDesc").textContent=s.saleDescription||"هذا الموقع معروض للبيع أو التعاقد المباشر.";if(s.saleEnabled){const n=normalizeWhatsapp(s.whatsapp);wa.style.display=n?"inline-flex":"none";if(n)wa.href=`https://wa.me/${n}?text=${encodeURIComponent("مرحبًا، أريد الاستفسار عن شراء موقع: "+s.name)}`;buy.style.display="inline-flex"}else{wa.style.display="none";buy.style.display="none"}document.getElementById("modalVisitBtn").href=s.url;openModal("detailsModal")}
+function toggleFavorite(id){id=String(id);favorites=favorites.includes(id)?favorites.filter(x=>x!==id):[...favorites,id];saveLocal();renderSites()}
+function addActiveToCart(){if(!activeSiteDetails)return;if(!activeSiteDetails.saleEnabled)return;if(!cart.some(x=>String(x.siteId)===String(activeSiteDetails.id))){cart.push({siteId:String(activeSiteDetails.id),price:activeSiteDetails.price,addedAt:Date.now()});saveLocal();toast("تمت إضافة الموقع إلى السلة","fa-cart-plus")}else toast("الموقع موجود بالفعل في السلة","fa-circle-info");goHash("#cart")}
+function parsePrice(p){const m=String(p||"").match(/([\d,.]+)/);return m?parseFloat(m[1].replace(/,/g,"")):0}
+function currency(p){const s=String(p||"");return /USD|\$/.test(s)?"USD":/EUR|€/.test(s)?"EUR":"EGP"}
+function renderCart(){const box=document.getElementById("cartItems");if(!cart.length){box.innerHTML='<div class="empty-state"><i class="fa-solid fa-cart-shopping"></i><h3>السلة فارغة</h3><p>أضف موقعًا معروضًا للبيع.</p></div>';document.getElementById("cartTotalPrice").innerText="0 EGP";return}let total=0,curr="EGP";box.innerHTML="";cart.forEach((x,i)=>{const s=sites.find(a=>String(a.id)===String(x.siteId));if(!s)return;total+=parsePrice(s.price);curr=currency(s.price);const d=document.createElement("div");d.className="order-box";d.innerHTML=`<strong>${safe(s.name)}</strong><div style="color:var(--success);margin:7px 0">${safe(s.price)}</div><button class="mini-btn danger" data-remove="${i}">إزالة</button>`;d.querySelector("[data-remove]").onclick=()=>{cart.splice(i,1);saveLocal();renderCart()};box.appendChild(d)});document.getElementById("cartTotalPrice").innerText=`${total.toLocaleString("en-US")} ${curr}`}
+async function checkoutCart(){if(!currentUser){openAuth();toast("سجّل الدخول أولًا","fa-user");return}if(!cart.length){toast("السلة فارغة","fa-cart-shopping");return}if(!db){toast("Firebase غير مهيأ. أضف إعدادات Web App أولًا","fa-triangle-exclamation");return}for(const x of cart){const s=sites.find(a=>String(a.id)===String(x.siteId));if(!s)continue;await db.ref("orders").push({siteId:String(s.id),siteName:s.name,siteUrl:s.url,buyerUid:currentUser.uid,buyerName:currentUser.displayName||"",buyerEmail:currentUser.email||"",price:s.price,status:"pending",createdAt:firebase.database.ServerValue.TIMESTAMP})}await sendChatText("أرسلت طلب شراء من السلة. أريد إتمام عملية الشراء.");cart=[];saveLocal();renderCart();toast("تم إرسال طلب الشراء للمالك","fa-paper-plane");goHash("#chat")}
+function googleLogin(){if(!auth){toast("بيانات Firebase Web App غير مكتملة","fa-triangle-exclamation");return}auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).then(()=>{closeModal("authModal");toast("تم تسجيل الدخول","fa-user-check")}).catch(e=>toast(e.message||"فشل تسجيل الدخول","fa-triangle-exclamation"))}
+function openAuth(){updateUserBox();openModal("authModal")}
+function updateUserBox(){const b=document.getElementById("userBox");if(!b)return;b.innerHTML=currentUser?`<div class="order-box"><strong>${safe(currentUser.displayName||"المستخدم")}</strong><p style="color:var(--text-muted);margin-top:5px">${safe(currentUser.email||"")}</p><button class="mini-btn danger" onclick="logout()">تسجيل الخروج</button></div>`:""}
+function logout(){auth?.signOut();toast("تم تسجيل الدخول والخروج بنجاح","fa-right-from-bracket")}
+function openAdminAuth(){if(isOwner){openAdminPanel();return}openAuth()}
+async function openAdminPanel(){if(!isOwner){toast("هذه الصفحة للمالك فقط","fa-lock");return}renderAdminSitesList();await renderAdminOrders();openModal("adminModal")}
+function renderAdminSitesList(){const b=document.getElementById("adminSitesList");b.innerHTML="";sites.forEach(s=>{const d=document.createElement("div");d.className="order-box";d.innerHTML=`<div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><div><strong>${safe(s.name)}</strong><small style="display:block;color:var(--text-muted)">${safe(s.category)} ${s.saleEnabled?"• "+safe(s.price):""}</small></div><div><button class="mini-btn" data-edit="${encodeURIComponent(s.id)}">تعديل</button><button class="mini-btn danger" data-del="${encodeURIComponent(s.id)}">حذف</button></div></div>`;d.querySelector("[data-edit]").onclick=()=>openSiteForm(s);d.querySelector("[data-del]").onclick=()=>deleteSite(s.id);b.appendChild(d)})}
+async function renderAdminOrders(){const b=document.getElementById("adminOrders");if(!db){b.innerHTML='<p style="color:var(--text-muted)">Firebase غير مهيأ.</p>';return}const snap=await db.ref("orders").orderByChild("createdAt").limitToLast(100).once("value");b.innerHTML="";snap.forEach(ch=>{const o={id:ch.key,...ch.val()};const d=document.createElement("div");d.className="order-box";d.innerHTML=`<strong>${safe(o.siteName)}</strong><div style="color:var(--text-muted);margin:5px 0">${safe(o.buyerEmail||o.buyerName||"مستخدم")} • ${safe(o.price)}</div><span class="status ${safe(o.status)}">${safe(o.status)}</span><div class="chat-actions">${o.status==="pending"?`<button class="mini-btn success" data-approve="${o.id}">إظهار بيانات التسليم</button>`:""}${o.status!=="completed"?`<button class="mini-btn" data-chat="${o.buyerUid}">محادثة</button>`:""}</div>`;const ap=d.querySelector("[data-approve]");if(ap)ap.onclick=()=>ownerShowDelivery(o);const cb=d.querySelector("[data-chat]");if(cb)cb.onclick=()=>openChatForUser(o.buyerUid);b.appendChild(d)})}
+async function ownerShowDelivery(o){if(!db||!isOwner)return;const s=sites.find(x=>String(x.id)===String(o.siteId));const delivery=s?.deliveryUrl||s?.url||o.siteUrl;if(!delivery){toast("أضف رابط التسليم للموقع أولًا","fa-triangle-exclamation");return}const ref=db.ref(`privateChats/${o.buyerUid}/messages`).push();await ref.set({senderUid:currentUser.uid,senderName:"مالك الموقع",text:"تمت الموافقة المبدئية. اضغط إظهار بيانات التسليم ثم وافق لإتمام نقل الموقع.",type:"delivery_offer",orderId:o.id,deliveryUrl:delivery,createdAt:firebase.database.ServerValue.TIMESTAMP});await db.ref(`orders/${o.id}`).update({status:"approved"});toast("تم إرسال بيانات التسليم للمشتري","fa-paper-plane");renderAdminOrders()}
+async function openChatForUser(uid){currentChatId=uid;goHash("#chatadmin");openChat(true)}
+function openChat(admin=false){if(!currentUser&&!admin){openAuth();return}if(!db){toast("Firebase غير مهيأ","fa-triangle-exclamation");return}openModal("chatModal");listenChat(admin?currentChatId:"global")}
+function listenChat(mode){if(!db)return;const path=mode==="global"?"chats/global":`privateChats/${mode}`;if(chatListener)chatListener.off();chatListener=db.ref(path+"/messages");chatListener.on("value",snap=>{const box=document.getElementById("chatBox");box.innerHTML="";snap.forEach(ch=>{const m={id:ch.key,...ch.val()};const d=document.createElement("div");d.className="chat-msg "+(currentUser&&m.senderUid===currentUser.uid?"me":"");d.innerHTML=`<div class="chat-meta">${safe(m.senderName||"مستخدم")}</div><div>${safe(m.text).replace(/\n/g,"<br>")}</div>${m.type==="delivery_offer"&&currentUser&&!isOwner?`<div class="chat-actions"><button class="mini-btn success" data-reveal="${m.id}">إظهار بيانات التسليم</button></div>`:""}`;const btn=d.querySelector("[data-reveal]");if(btn)btn.onclick=()=>showDelivery(m);box.appendChild(d)});box.scrollTop=box.scrollHeight})}
+async function sendChat(){const i=document.getElementById("chatInput");const t=i.value.trim();if(!t)return;if(!currentUser){openAuth();return}await sendChatText(t);i.value=""}
+async function sendChatText(text){if(!db||!currentUser)return;const path=currentChatId==="global"?"chats/global":`privateChats/${currentChatId}`;await db.ref(path+"/messages").push({senderUid:currentUser.uid,senderName:currentUser.displayName||currentUser.email||"مستخدم",text,createdAt:firebase.database.ServerValue.TIMESTAMP})}
+async function showDelivery(m){if(!db||!currentUser)return;const orderId=m.orderId;if(!orderId)return;const ok=confirm("هل تريد الموافقة على استلام الموقع بعد ظهور بيانات التسليم؟");if(!ok)return;const url=m.deliveryUrl;if(url)window.open(url,"_blank","noopener");await db.ref(`orders/${orderId}`).update({status:"completed",completedAt:firebase.database.ServerValue.TIMESTAMP});await sendChatText("تمت الموافقة على الاستلام وإتمام العملية.");toast("تم إتمام العملية وفتح رابط الموقع","fa-circle-check")}
+function shareCurrentSite(){if(!activeSiteDetails)return;const u=location.href;if(navigator.share)navigator.share({title:activeSiteDetails.name,text:activeSiteDetails.description,url:u}).catch(()=>{});else navigator.clipboard?.writeText(u).then(()=>toast("تم نسخ رابط الصفحة","fa-copy"))}
+function openSiteForm(s=null){document.getElementById("siteId").value=s?.id||"";document.getElementById("formName").value=s?.name||"";document.getElementById("formCategory").value=s?.category||"مواقع";document.getElementById("formUrl").value=s?.url||"";document.getElementById("formImage").value=s?.image||"";document.getElementById("formDescription").value=s?.description||"";document.getElementById("formSaleEnabled").checked=!!s?.saleEnabled;document.getElementById("formPrice").value=s?.price||"";document.getElementById("formWhatsapp").value=s?.whatsapp||"";document.getElementById("formSaleDescription").value=s?.saleDescription||"";document.getElementById("formDeliveryUrl").value=s?.deliveryUrl||"";document.getElementById("saleFieldsContainer").style.display=s?.saleEnabled?"block":"none";document.getElementById("formModalTitle").textContent=s?"تعديل الموقع":"إضافة موقع";openModal("siteFormModal")}
+function toggleSaleFields(){document.getElementById("saleFieldsContainer").style.display=document.getElementById("formSaleEnabled").checked?"block":"none"}
+async function uploadImage(file){if(!sb||!file)return"";const ext=(file.name.split(".").pop()||"jpg").toLowerCase();const path=`sites/${Date.now()}-${crypto.randomUUID?.()||Math.random().toString(36).slice(2)}.${ext}`;const {error}=await sb.storage.from("memories").upload(path,file,{upsert:false,contentType:file.type});if(error)throw error;return sb.storage.from("memories").getPublicUrl(path).data.publicUrl}
+async function handleSiteFormSubmit(e){e.preventDefault();if(!isOwner){toast("المالك فقط يستطيع الحفظ","fa-lock");return}const id=document.getElementById("siteId").value;const file=document.getElementById("formImageFile").files[0];let image=document.getElementById("formImage").value.trim();try{if(file){toast("جاري رفع الصورة","fa-cloud-arrow-up");image=await uploadImage(file)}if(!image){toast("ضع رابط صورة أو ارفع صورة","fa-image");return}const data={name:document.getElementById("formName").value.trim(),category:document.getElementById("formCategory").value,description:document.getElementById("formDescription").value.trim(),url:document.getElementById("formUrl").value.trim(),image,sale_enabled:document.getElementById("formSaleEnabled").checked,price:document.getElementById("formPrice").value.trim(),whatsapp:normalizeWhatsapp(document.getElementById("formWhatsapp").value),sale_description:document.getElementById("formSaleDescription").value.trim(),delivery_url:document.getElementById("formDeliveryUrl").value.trim(),updated_at:new Date().toISOString()};if(sb){let res;if(id)res=await sb.from("sites").update(data).eq("id",id);else res=await sb.from("sites").insert(data);if(res.error)throw res.error}else throw new Error("Supabase غير مهيأ");await loadSites();renderSites();renderAdminSitesList();closeModal("siteFormModal");toast(id?"تم تحديث الموقع":"تمت إضافة الموقع","fa-circle-check")}catch(err){console.error(err);toast(err.message||"حدث خطأ أثناء الحفظ","fa-triangle-exclamation")}}
+async function deleteSite(id){if(!isOwner||!confirm("حذف الموقع نهائيًا؟"))return;if(!sb)return;const {error}=await sb.from("sites").delete().eq("id",id);if(error){toast(error.message,"fa-triangle-exclamation");return}await loadSites();renderSites();renderAdminSitesList();toast("تم حذف الموقع","fa-trash")}
+function handleSearch(e){searchQuery=e.target.value.trim();renderSites()}
+function filterByCategory(c,el){currentCategory=c;document.querySelectorAll(".category-chip").forEach(x=>x.classList.remove("active"));el.classList.add("active");renderSites()}
+function updateCartCount(){document.getElementById("cartCount").textContent=cart.length?`<b style="background:var(--danger);color:#fff;border-radius:20px;padding:2px 6px;font-size:10px">${cart.length}</b>`:"";if(document.getElementById("cartModal").classList.contains("active"))renderCart()}
+function handleRouting(){const h=decodeURIComponent(location.hash||"#dashboard");document.querySelectorAll(".bottom-nav-item").forEach(x=>x.classList.remove("active"));if(h==="#cart"){renderCart();openModal("cartModal")}else if(h==="#chat"||h==="#chatadmin"){openChat(h==="#chatadmin")}else if(h==="#favorites"){renderSites();openModal("detailsModal")&&closeModal("detailsModal")}else if(h.startsWith("#site-")){const s=sites.find(x=>slug(x.name)===h.slice(6));if(s)openDetails(s.id)}else if(h==="#admin"){openAdminAuth()}else{renderSites()}}
+window.addEventListener("hashchange",handleRouting);
+document.addEventListener("keydown",e=>{if(e.key==="Escape")document.querySelectorAll(".modal-overlay.active").forEach(m=>m.classList.remove("active"));if(e.key==="Enter"&&document.activeElement?.id==="chatInput")sendChat()});
+document.addEventListener("DOMContentLoaded",init);
+</script>
+</body>
+</html>
